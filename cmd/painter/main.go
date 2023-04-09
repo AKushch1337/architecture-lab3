@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/AKushch1337/architecture-lab3/painter"
 	"net/http"
 
-	"github.com/roman-mazur/architecture-lab-3/painter"
-	"github.com/roman-mazur/architecture-lab-3/painter/lang"
-	"github.com/roman-mazur/architecture-lab-3/ui"
+	"github.com/AKushch1337/architecture-lab3/painter/lang"
+	"github.com/AKushch1337/architecture-lab3/ui"
 )
 
 func main() {
