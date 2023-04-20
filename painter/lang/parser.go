@@ -41,19 +41,19 @@ func (p *Parser) finalizeResult() []painter.Operation {
 	if p.lastBgRect != nil {
 		res = append(res, p.lastBgRect)
 	}
+	if len(p.moveOps) != 0 {
+		res = append(res, p.moveOps...)
+	}
+	p.moveOps = nil
 	if len(p.figures) != 0 {
 		println(len(p.figures))
 		for _, figure := range p.figures {
 			res = append(res, figure)
 		}
 	}
-	if len(p.moveOps) != 0 {
-		res = append(res, p.moveOps...)
-	}
 	if p.updateOp != nil {
 		res = append(res, p.updateOp)
 	}
-	p.resetState()
 	return res
 }
 
@@ -95,7 +95,6 @@ func (p *Parser) parse(commandLine string) error {
 	case "move":
 		moveOp := painter.MoveOp{X: intArgs[0], Y: intArgs[1], Figures: p.figures}
 		p.moveOps = append(p.moveOps, &moveOp)
-		p.figures = nil
 	case "reset":
 		p.resetState()
 		p.lastBgColor = painter.OperationFunc(painter.Reset)
