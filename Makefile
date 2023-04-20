@@ -1,4 +1,4 @@
-test:
+tests:
 	go test ./...
 
 out/example: cmd/painter/main.go
