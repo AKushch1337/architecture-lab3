@@ -64,20 +64,20 @@ type FigureOp struct {
 }
 
 func (op *FigureOp) Do(t screen.Texture) bool {
-	t.Fill(image.Rect(op.X-200, op.Y+100, op.X+200, op.Y-100), op.C, draw.Src)
-	t.Fill(image.Rect(op.X-100, op.Y-200, op.X+100, op.Y+200), op.C, draw.Src)
+	t.Fill(image.Rect(op.X-100, op.Y+50, op.X+100, op.Y-50), op.C, draw.Src)
+	t.Fill(image.Rect(op.X-50, op.Y-100, op.X+50, op.Y+100), op.C, draw.Src)
 	return false
 }
 
 type MoveOp struct {
 	X, Y    int
-	Figures []FigureOp
+	Figures []*FigureOp
 }
 
 func (op *MoveOp) Do(t screen.Texture) bool {
 	for i := range op.Figures {
-		op.Figures[i].X = op.X
-		op.Figures[i].Y = op.Y
+		op.Figures[i].X += op.X
+		op.Figures[i].Y += op.Y
 		op.Figures[i].Do(t)
 	}
 	return false
