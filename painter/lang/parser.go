@@ -13,32 +13,59 @@ import (
 
 // Parser уміє прочитати дані з вхідного io.Reader та повернути список операцій представлені вхідним скриптом.
 type Parser struct {
+	lastBgColor painter.Operation
+	lastBgRect  *painter.BgRectOp
+	figures     []*painter.FigureOp
+	moveOps     []painter.Operation
+	updateOp    painter.Operation
 }
 
 func (p *Parser) Parse(in io.Reader) ([]painter.Operation, error) {
 	scanner := bufio.NewScanner(in)
 	scanner.Split(bufio.ScanLines)
-	var res []painter.Operation
 	for scanner.Scan() {
 		commandLine := scanner.Text()
-		op := parse(commandLine) // parse the line to get Operation
-		if op == nil {
-			return nil, fmt.Errorf("failed to parse command: %s", commandLine)
+		err := p.parse(commandLine) // parse the line to get Operation
+		if err != nil {
+			return nil, err
 		}
-		if bgRectOp, ok := op.(*painter.BgRectOp); ok {
-			for i, oldOp := range res {
-				if _, ok := oldOp.(*painter.BgRectOp); ok {
-					res[i] = bgRectOp
-					break
-				}
-			}
-		}
-		res = append(res, op)
 	}
-	return res, nil
+	return p.finalizeResult(), nil
 }
 
-func parse(commandLine string) painter.Operation {
+func (p *Parser) finalizeResult() []painter.Operation {
+	var res []painter.Operation
+	if p.lastBgColor != nil {
+		res = append(res, p.lastBgColor)
+	}
+	if p.lastBgRect != nil {
+		res = append(res, p.lastBgRect)
+	}
+	if len(p.figures) != 0 {
+		println(len(p.figures))
+		for _, figure := range p.figures {
+			res = append(res, figure)
+		}
+	}
+	if len(p.moveOps) != 0 {
+		res = append(res, p.moveOps...)
+	}
+	if p.updateOp != nil {
+		res = append(res, p.updateOp)
+	}
+	p.resetState()
+	return res
+}
+
+func (p *Parser) resetState() {
+	p.lastBgColor = nil
+	p.lastBgRect = nil
+	p.figures = nil
+	p.moveOps = nil
+	p.updateOp = nil
+}
+
+func (p *Parser) parse(commandLine string) error {
 	parts := strings.Split(commandLine, " ")
 	instruction := parts[0]
 	var args []string
@@ -53,27 +80,29 @@ func parse(commandLine string) painter.Operation {
 		}
 	}
 
-	var figureOps []painter.FigureOp
-
 	switch instruction {
 	case "white":
-		return painter.OperationFunc(painter.WhiteFill)
+		p.lastBgColor = painter.OperationFunc(painter.WhiteFill)
 	case "green":
-		return painter.OperationFunc(painter.GreenFill)
+		print()
+		p.lastBgColor = painter.OperationFunc(painter.GreenFill)
 	case "bgrect":
-		return &painter.BgRectOp{X1: intArgs[0], Y1: intArgs[1], X2: intArgs[2], Y2: intArgs[3]}
+		p.lastBgRect = &painter.BgRectOp{X1: intArgs[0], Y1: intArgs[1], X2: intArgs[2], Y2: intArgs[3]}
 	case "figure":
 		col := color.RGBA{R: 219, G: 208, B: 48, A: 1}
 		figure := painter.FigureOp{X: intArgs[0], Y: intArgs[1], C: col}
-		figureOps = append(figureOps, figure)
-		return &figure
+		p.figures = append(p.figures, &figure)
 	case "move":
-		return &painter.MoveOp{X: intArgs[0], Y: intArgs[1], Figures: figureOps}
+		moveOp := painter.MoveOp{X: intArgs[0], Y: intArgs[1], Figures: p.figures}
+		p.moveOps = append(p.moveOps, &moveOp)
+		p.figures = nil
 	case "reset":
-		figureOps = figureOps[0:0]
-		return painter.OperationFunc(painter.Reset)
+		p.resetState()
+		p.lastBgColor = painter.OperationFunc(painter.Reset)
 	case "update":
-		return painter.UpdateOp
+		p.updateOp = painter.UpdateOp
+	default:
+		return fmt.Errorf("could not parse command %v", commandLine)
 	}
 	return nil
 }
