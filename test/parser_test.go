@@ -64,9 +64,9 @@ func Test_parse_struct(t *testing.T) {
 			op:      nil,
 		},
 	}
-	parser := &lang.Parser{}
 	for _, tt := range tests {
 		t.Run(tt.command, func(t *testing.T) {
+			parser := &lang.Parser{}
 			op, err := parser.Parse(strings.NewReader(tt.command))
 			if err != nil {
 				assert.Nil(t, tt.op)
