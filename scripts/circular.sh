@@ -8,9 +8,12 @@ bottom_to_right=900
 right_to_top=1200
 step=10
 
+./reset_window.sh
+
 curl -X POST http://localhost:17000 -d "figure $start_x $start_y"
 
 while true; do
+    curl -X POST http://localhost:17000 -d "update"
     for ((i = 0; i < top_to_left; i += step)); do
         curl -X POST http://localhost:17000 -d "move $((-step)) $((step))"
     done

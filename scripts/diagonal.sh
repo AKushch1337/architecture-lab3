@@ -8,12 +8,15 @@ max_dist=$((finish_pos - start_pos))
 step=10
 interval=0.01
 
+./reset_window.sh
+
 curl -X POST http://localhost:17000 -d "figure $start_pos $start_pos"
 pos=$start_pos
 dist=0
 sleep $interval
 
 while true; do
+    curl -X POST http://localhost:17000 -d "update"
     while (( pos < finish_pos )); do
     if ((dist + d > max_dist)); then
         curl -X POST http://localhost:17000 -d "move $((max_dist-dist)) $((max_dist-dist))"
