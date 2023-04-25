@@ -67,7 +67,7 @@ func TestLoop(t *testing.T) {
 	screenMock := new(MockScreen)
 	textureMock := new(MockTexture)
 	receiverMock := new(MockReceiver)
-	texture := image.Pt(400, 400)
+	texture := image.Pt(800, 800)
 	screenMock.On("NewTexture", texture).Return(textureMock, nil)
 	receiverMock.On("Update", textureMock).Return()
 	loop := painter.Loop{
@@ -92,7 +92,7 @@ func TestLoop(t *testing.T) {
 	op1.AssertCalled(t, "Do", textureMock)
 	op2.AssertCalled(t, "Do", textureMock)
 	receiverMock.AssertCalled(t, "Update", textureMock)
-	screenMock.AssertCalled(t, "NewTexture", image.Pt(400, 400))
+	screenMock.AssertCalled(t, "NewTexture", image.Pt(800, 800))
 }
 
 type MockOperation struct {
