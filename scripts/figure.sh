@@ -1,7 +1,5 @@
 #!/bin/bash
 
-./reset_window.sh
-
 curl -X POST http://localhost:17000 -d "white"
 curl -X POST http://localhost:17000 -d "bgrect 200 200 600 600"
 curl -X POST http://localhost:17000 -d "figure 400 400"

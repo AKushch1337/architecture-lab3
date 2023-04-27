@@ -8,8 +8,6 @@ max_dist=$((finish_pos - start_pos))
 step=10
 interval=0.01
 
-./reset_window.sh
-
 curl -X POST http://localhost:17000 -d "figure $start_pos $start_pos"
 pos=$start_pos
 dist=0
@@ -27,6 +25,7 @@ while true; do
         pos=$((pos + step))
         dist=$((dist + step))
     fi
+    curl -X POST http://localhost:17000 -d "update"
     sleep $interval
     done
 
@@ -40,6 +39,7 @@ while true; do
         pos=$((pos - step))
         dist=$((dist - step))
         fi
+        curl -X POST http://localhost:17000 -d "update"
         sleep $interval
     done
 done
