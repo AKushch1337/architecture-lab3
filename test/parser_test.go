@@ -71,9 +71,9 @@ func Test_parse_struct(t *testing.T) {
 			if err != nil {
 				assert.Nil(t, tt.op)
 			} else {
-				assert.Equal(t, reflect.TypeOf(tt.op), reflect.TypeOf(op[0]))
+				assert.Equal(t, reflect.TypeOf(tt.op), reflect.TypeOf(op[1]))
 				if tt.op != nil {
-					assert.Equal(t, tt.op, op[0])
+					assert.Equal(t, tt.op, op[1])
 				}
 			}
 		})
