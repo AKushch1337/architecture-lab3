@@ -20,7 +20,17 @@ type Parser struct {
 	updateOp    painter.Operation
 }
 
+func (p *Parser) initialize() {
+	if p.lastBgColor == nil {
+		p.lastBgColor = painter.OperationFunc(painter.Reset)
+	}
+	if p.updateOp != nil {
+		p.updateOp = nil
+	}
+}
+
 func (p *Parser) Parse(in io.Reader) ([]painter.Operation, error) {
+	p.initialize()
 	scanner := bufio.NewScanner(in)
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
@@ -84,7 +94,6 @@ func (p *Parser) parse(commandLine string) error {
 	case "white":
 		p.lastBgColor = painter.OperationFunc(painter.WhiteFill)
 	case "green":
-		print()
 		p.lastBgColor = painter.OperationFunc(painter.GreenFill)
 	case "bgrect":
 		p.lastBgRect = &painter.BgRectOp{X1: intArgs[0], Y1: intArgs[1], X2: intArgs[2], Y2: intArgs[3]}
