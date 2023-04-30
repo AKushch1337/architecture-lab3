@@ -9,9 +9,9 @@ right_to_top=1200
 step=10
 
 curl -X POST http://localhost:17000 -d "figure $start_x $start_y"
+curl -X POST http://localhost:17000 -d "update"
 
 while true; do
-    curl -X POST http://localhost:17000 -d "update"
     for ((i = 0; i < top_to_left; i += step)); do
         curl -X POST http://localhost:17000 -d "move $((-step)) $((step))"
         curl -X POST http://localhost:17000 -d "update"

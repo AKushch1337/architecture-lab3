@@ -9,14 +9,15 @@ step=10
 interval=0.01
 
 curl -X POST http://localhost:17000 -d "figure $start_pos $start_pos"
+curl -X POST http://localhost:17000 -d "update"
+
 pos=$start_pos
 dist=0
 sleep $interval
 
 while true; do
-    curl -X POST http://localhost:17000 -d "update"
     while (( pos < finish_pos )); do
-    if ((dist + d > max_dist)); then
+    if ((dist + step > max_dist)); then
         curl -X POST http://localhost:17000 -d "move $((max_dist-dist)) $((max_dist-dist))"
         pos=$finish_pos
         dist=$max_dist
